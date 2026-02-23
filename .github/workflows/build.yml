@@ -31,28 +31,28 @@ jobs:
     - name: Test build output
       run: |
         echo "Checking build output..."
-        ls -la bin/Release/netstandard2.1/
+        ls -la bin/Release/net6.0/
     
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
       with:
         name: MorePlayers-${{ github.sha }}
-        path: bin/Release/netstandard2.1/MorePlayers.dll
+        path: bin/Release/net6.0/MorePlayers.dll
         if-no-files-found: error
     
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
-        files: bin/Release/netstandard2.1/MorePlayers.dll
+        files: bin/Release/net6.0/MorePlayers.dll
         body: |
           ## MorePlayers Mod for Pit of Goblin
           
           ### Installation
-          1. Install BepInEx 5 IL2CPP for your game
+          1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader/releases/latest) for your game
           2. Download `MorePlayers.dll` below
-          3. Copy to `BepInEx/plugins/` folder
-          4. Run the game and configure in `BepInEx/config/com.rxflex.moreplayers.cfg`
+          3. Copy to `<Game Folder>/Mods/` folder
+          4. Run the game and configure in `UserData/MelonPreferences.cfg`
           
           ### Changes
           See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.

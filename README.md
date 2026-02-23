@@ -1,7 +1,6 @@
 # MorePlayers Mod for Pit of Goblin
 
 [![Build and Release](https://github.com/Rxflex/MorePlayers/actions/workflows/build.yml/badge.svg)](https://github.com/Rxflex/MorePlayers/actions/workflows/build.yml)
-[![CodeQL](https://github.com/Rxflex/MorePlayers/actions/workflows/codeql.yml/badge.svg)](https://github.com/Rxflex/MorePlayers/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Increases the maximum player count in Pit of Goblin from 4 to a configurable amount (default: 20).
@@ -10,7 +9,7 @@ Increases the maximum player count in Pit of Goblin from 4 to a configurable amo
 
 - 🎮 Configurable maximum player count (2-100)
 - ⚙️ Easy to install and configure
-- 🔧 Works with BepInEx 5
+- 🔧 Works with MelonLoader
 - 📝 Automatic config generation
 - 🛡️ Safe and tested
 
@@ -18,32 +17,30 @@ Increases the maximum player count in Pit of Goblin from 4 to a configurable amo
 
 ### For Users
 
-1. **Install BepInEx**
-   - Download [BepInEx 5 IL2CPP](https://github.com/BepInEx/BepInEx/releases) (get the IL2CPP version)
-   - Extract all files to your game folder (where `Pit of Goblin.exe` is located)
-   - Run the game once to generate BepInEx folders
-   - Close the game
+1. **Install MelonLoader**
+   - Download [MelonLoader](https://github.com/LavaGang/MelonLoader/releases/latest)
+   - Download `MelonLoader.Installer.exe`
+   - Run the installer and select your game folder
+   - Click "Install"
+   - Run the game once to generate folders
 
 2. **Install MorePlayers Mod**
    - Download `MorePlayers.dll` from [Releases](https://github.com/Rxflex/MorePlayers/releases)
-   - Copy to `BepInEx/plugins/` folder
+   - Copy to `<Game Folder>/Mods/` folder
    - Run the game
 
 3. **Configure (Optional)**
-   - After first run, edit `BepInEx/config/com.rxflex.moreplayers.cfg`
+   - After first run, edit `<Game Folder>/UserData/MelonPreferences.cfg`
+   - Find `[MorePlayers]` section
    - Change `MaxPlayers` value (2-100)
    - Save and restart the game
 
 ## ⚙️ Configuration
 
-The config file is located at `BepInEx/config/com.rxflex.moreplayers.cfg`
+The config file is located at `<Game Folder>/UserData/MelonPreferences.cfg`
 
 ```ini
-[General]
-## Maximum number of players allowed in a lobby (default: 20, game default: 4)
-# Setting type: Int32
-# Default value: 20
-# Acceptable value range: From 2 to 100
+[MorePlayers]
 MaxPlayers = 20
 ```
 
@@ -54,6 +51,7 @@ Change `20` to any number between 2 and 100.
 ### Prerequisites
 - [.NET SDK 6.0](https://dotnet.microsoft.com/download) or later
 - Git
+- Game DLLs (see `dump/README.md`)
 
 ### Build Steps
 
@@ -69,30 +67,30 @@ dotnet restore
 dotnet build -c Release
 ```
 
-The compiled DLL will be in `bin/Release/netstandard2.1/MorePlayers.dll`
+The compiled DLL will be in `bin/Release/net6.0/MorePlayers.dll`
 
 Or simply run `build.bat` on Windows.
 
 ## 📋 Requirements
 
-- **BepInEx 5.x** (IL2CPP version)
+- **MelonLoader** (latest version)
 - **Pit of Goblin** (Il2Cpp version)
-- **.NET Standard 2.1** runtime (included with BepInEx)
+- **.NET 6.0** runtime (included with MelonLoader)
 
 ## 🐛 Troubleshooting
 
 ### Mod doesn't load
-- Verify BepInEx is installed correctly
-- Check `BepInEx/LogOutput.log` for errors
-- Make sure you downloaded the IL2CPP version of BepInEx
+- Verify MelonLoader is installed correctly
+- Check `<Game Folder>/MelonLoader/Latest.log` for errors
+- Make sure DLL is in `Mods/` folder, not `Plugins/`
 
 ### Game crashes
 - Check if game was updated (may need new mod version)
-- Verify BepInEx version is compatible with your game version
-- Look for error messages in `BepInEx/LogOutput.log`
+- Verify MelonLoader version is compatible
+- Look for error messages in `MelonLoader/Latest.log`
 
 ### Max players not working
-- Ensure config file was generated in `BepInEx/config/`
+- Ensure config file was generated in `UserData/`
 - Verify patches applied successfully (check logs)
 - Make sure the host has the mod installed
 - All players should have the mod for best compatibility
@@ -107,7 +105,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- BepInEx team for the modding framework
+- MelonLoader team for the modding framework
 - Harmony for runtime patching
 - Pit of Goblin developers
 

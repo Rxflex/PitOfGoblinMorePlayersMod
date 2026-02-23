@@ -15,27 +15,35 @@ This folder should contain the game's DLL files needed for compilation. These fi
    - `global-metadata.dat` from `Pit of Goblin_Data\il2cpp_data\Metadata\`
 3. Copy the generated `DummyDll` folder to this location
 
-### Option 2: Copy from BepInEx
+### Option 2: Copy from MelonLoader
 
-If you have BepInEx installed, you can copy DLLs from:
+After installing MelonLoader, you can copy DLLs from:
 ```
-<Game Folder>\BepInEx\unhollowed\
+<Game Folder>\MelonLoader\Il2CppAssemblies\
 ```
 
 ### Required Files for Compilation
 
-At minimum, you need:
+You need these DLLs:
+- `MelonLoader.dll` - From `<Game Folder>\MelonLoader\net6\`
+- `0Harmony.dll` - From `<Game Folder>\MelonLoader\net6\`
 - `Assembly-CSharp.dll` - Main game code
 - `Unity.Netcode.Runtime.dll` - Networking
+- `UnityEngine.dll` - Unity engine
+- `UnityEngine.CoreModule.dll` - Unity core
 
 ## Structure
 
-After dumping, your folder should look like:
+After setup, your folder should look like:
 ```
 dump/
 ├── DummyDll/
+│   ├── MelonLoader.dll
+│   ├── 0Harmony.dll
 │   ├── Assembly-CSharp.dll
 │   ├── Unity.Netcode.Runtime.dll
+│   ├── UnityEngine.dll
+│   ├── UnityEngine.CoreModule.dll
 │   └── ... (other DLLs)
 └── README.md (this file)
 ```
@@ -46,4 +54,10 @@ These DLL files are only needed for **compiling** the mod. They are not distribu
 
 ## CI/CD
 
-GitHub Actions workflow will fail without these files. The project uses NuGet for Unity DLLs, so only game-specific DLLs need to be provided manually.
+GitHub Actions workflow will fail without these files. For local development:
+
+1. Install MelonLoader in your game
+2. Copy required DLLs from game folder to `dump/DummyDll/`
+3. Build the project
+
+The DLLs are not committed to the repository due to size and copyright.

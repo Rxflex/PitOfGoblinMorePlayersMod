@@ -4,25 +4,29 @@
 
 ### Installation
 
-1. **Install BepInEx**
-   - Download BepInEx 5 IL2CPP from: https://github.com/BepInEx/BepInEx/releases
-   - Extract to your game folder (where `Pit of Goblin.exe` is located)
-   - Run the game once to generate BepInEx folders
+1. **Install MelonLoader**
+   - Download from: https://github.com/LavaGang/MelonLoader/releases/latest
+   - Run `MelonLoader.Installer.exe`
+   - Select your game folder (where `Pit of Goblin.exe` is)
+   - Click "Install"
+   - Run the game once (it will take longer first time)
+   - Close the game
 
 2. **Install MorePlayers Mod**
    - Download `MorePlayers.dll` from releases
-   - Copy to `BepInEx/plugins/` folder
+   - Copy to `<Game Folder>/Mods/` folder
    - Run the game
 
 3. **Configure**
-   - After first run, edit `BepInEx/config/com.rxflex.moreplayers.cfg`
+   - After first run, edit `<Game Folder>/UserData/MelonPreferences.cfg`
+   - Find `[MorePlayers]` section
    - Change `MaxPlayers` value (2-100)
-   - Restart the game
+   - Save and restart the game
 
 ### Configuration Example
 
 ```ini
-[General]
+[MorePlayers]
 MaxPlayers = 20
 ```
 
@@ -35,6 +39,7 @@ Change `20` to any number between 2 and 100.
 1. **Prerequisites**
    - .NET SDK 6.0 or later
    - Git
+   - Game DLLs (see dump/README.md)
 
 2. **Clone and Build**
    ```bash
@@ -45,38 +50,53 @@ Change `20` to any number between 2 and 100.
    ```
 
 3. **Output**
-   - DLL will be in `bin/Release/netstandard2.1/MorePlayers.dll`
+   - DLL will be in `bin/Release/net6.0/MorePlayers.dll`
 
 ### Project Structure
 
 ```
 MorePlayers/
-├── MorePlayersPlugin.cs      # Main plugin class
-├── PluginInfo.cs              # Plugin metadata
-├── Patches/
-│   └── NetworkHandlerPatches.cs  # Harmony patches
-├── dump/                      # Game DLLs (not in repo)
-└── MorePlayers.csproj         # Project file
+├── MorePlayersMod.cs              # Main mod class
+├── Properties/AssemblyInfo.cs     # MelonLoader attributes
+├── dump/                          # Game DLLs (not in repo)
+└── MorePlayers.csproj             # Project file
 ```
 
 ### Testing
 
-1. Copy `MorePlayers.dll` to `BepInEx/plugins/`
+1. Copy `MorePlayers.dll` to `<Game Folder>/Mods/`
 2. Run the game
-3. Check `BepInEx/LogOutput.log` for mod messages
+3. Check `<Game Folder>/MelonLoader/Latest.log` for mod messages
 4. Try creating a lobby with more than 4 players
 
 ### Troubleshooting
 
 **Mod doesn't load:**
-- Check BepInEx is installed correctly
-- Look for errors in `BepInEx/LogOutput.log`
+- Check MelonLoader is installed correctly
+- Look for errors in `MelonLoader/Latest.log`
+- Verify DLL is in `Mods/` folder
 
 **Game crashes:**
 - Check if game was updated (may need new dump)
-- Verify BepInEx version is compatible
+- Verify MelonLoader version is compatible
+- Look for stack traces in logs
 
 **Max players not working:**
 - Check config file was generated
 - Verify patches applied (check logs)
 - Make sure all players have the mod installed
+
+## MelonLoader vs BepInEx
+
+This mod uses **MelonLoader** because:
+- Better support for new Unity versions (2022.3+)
+- Easier installation
+- More stable for Il2Cpp games
+- Better logging and debugging
+
+## Important Notes
+
+- The mod must be installed on the **host** (lobby creator)
+- All players should have the mod for best compatibility
+- Config changes require game restart
+- Check logs if something doesn't work

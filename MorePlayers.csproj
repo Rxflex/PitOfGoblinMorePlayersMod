@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>MorePlayers</AssemblyName>
     <Product>MorePlayers</Product>
     <Version>1.0.0</Version>
@@ -9,21 +9,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
-    <PackageReference Include="UnityEngine.Modules" Version="2022.3.10" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>dump\DummyDll\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
+    <Reference Include="0Harmony">
+      <HintPath>dump\DummyDll\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
     <Reference Include="Assembly-CSharp">
       <HintPath>dump\DummyDll\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    
+    <Reference Include="UnityEngine">
+      <HintPath>dump\DummyDll\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>dump\DummyDll\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
     <Reference Include="Unity.Netcode.Runtime">
       <HintPath>dump\DummyDll\Unity.Netcode.Runtime.dll</HintPath>
       <Private>false</Private>
