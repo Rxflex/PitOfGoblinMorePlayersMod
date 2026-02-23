@@ -23,51 +23,7 @@ namespace MorePlayers
 
         public override void OnInitializeMelon()
         {
-            try
-            {
-                LoggerInstance.Msg("[OnInitializeMelon] Starting initialization...");
-                
-                // Создаем категорию конфигурации с дефолтным значением 20
-                _configCategory = MelonPreferences.CreateCategory("MorePlayers");
-                _maxPlayersEntry = _configCategory.CreateEntry(
-                    "MaxPlayers", 
-                    MOD_DEFAULT_MAX_PLAYERS, 
-                    "Maximum number of players (default: 20, can be changed to any value like 6, 8, 12, etc.)"
-                );
-
-                // Загружаем значение из конфига
-                MaxPlayers = _maxPlayersEntry.Value;
-
-                // Валидация значения
-                if (MaxPlayers < MIN_PLAYERS)
-                {
-                    LoggerInstance.Warning($"MaxPlayers value {MaxPlayers} is too low. Setting to minimum: {MIN_PLAYERS}");
-                    MaxPlayers = MIN_PLAYERS;
-                    _maxPlayersEntry.Value = MIN_PLAYERS;
-                }
-                else if (MaxPlayers > MAX_PLAYERS_LIMIT)
-                {
-                    LoggerInstance.Warning($"MaxPlayers value {MaxPlayers} is too high. Setting to maximum: {MAX_PLAYERS_LIMIT}");
-                    MaxPlayers = MAX_PLAYERS_LIMIT;
-                    _maxPlayersEntry.Value = MAX_PLAYERS_LIMIT;
-                }
-
-                _configCategory.SaveToFile();
-
-                LoggerInstance.Msg("========================================");
-                LoggerInstance.Msg("MorePlayers mod initialized!");
-                LoggerInstance.Msg($"Max players set to: {MaxPlayers}");
-                LoggerInstance.Msg($"Game default limit: {GAME_DEFAULT_MAX_PLAYERS}");
-                LoggerInstance.Msg($"You can change MaxPlayers in the config file");
-                LoggerInstance.Msg("========================================");
-                
-                LoggerInstance.Msg("[OnInitializeMelon] Initialization complete");
-                LoggerInstance.Msg("[OnInitializeMelon] Waiting for game to fully load before applying patches...");
-            }
-            catch (System.Exception ex)
-            {
-                LoggerInstance.Error($"[OnInitializeMelon] Error during initialization: {ex}");
-            }
+            LoggerInstance.Msg("MorePlayers mod loaded!");
         }
 
         private bool _patchesApplied = false;
@@ -76,11 +32,11 @@ namespace MorePlayers
         {
             try
             {
-                LoggerInstance.Msg($"[OnSceneWasLoaded] Scene loaded: {sceneName} (index: {buildIndex})");
+                LoggerInstance.Msg($"Scene loaded: {sceneName}");
             }
             catch (System.Exception ex)
             {
-                LoggerInstance.Error($"[OnSceneWasLoaded] Error: {ex}");
+                LoggerInstance.Error($"OnSceneWasLoaded error: {ex}");
             }
         }
 
@@ -88,19 +44,19 @@ namespace MorePlayers
         {
             try
             {
-                LoggerInstance.Msg($"[OnSceneWasInitialized] Scene initialized: {sceneName} (index: {buildIndex})");
+                LoggerInstance.Msg($"Scene initialized: {sceneName}");
                 
                 // Применяем патчи только один раз при инициализации первой сцены
                 if (!_patchesApplied)
                 {
-                    LoggerInstance.Msg("[OnSceneWasInitialized] Applying patches now that scene is initialized...");
+                    LoggerInstance.Msg("Applying patches...");
                     ApplyPatches();
                     _patchesApplied = true;
                 }
             }
             catch (System.Exception ex)
             {
-                LoggerInstance.Error($"[OnSceneWasInitialized] Error: {ex}");
+                LoggerInstance.Error($"OnSceneWasInitialized error: {ex}");
             }
         }
 
