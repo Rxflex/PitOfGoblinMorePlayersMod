@@ -18,6 +18,25 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.0.x'
+    
+    - name: Download MelonLoader
+      run: |
+        mkdir -p dump/DummyDll
+        
+        # Download MelonLoader
+        wget https://github.com/LavaGang/MelonLoader/releases/download/v0.6.1/MelonLoader.x64.zip -O melonloader.zip
+        unzip -q melonloader.zip -d melonloader_temp
+        
+        # Copy required DLLs
+        find melonloader_temp -name "MelonLoader.dll" -exec cp {} dump/DummyDll/ \;
+        find melonloader_temp -name "0Harmony.dll" -exec cp {} dump/DummyDll/ \;
+        
+        # Verify files exist
+        ls -la dump/DummyDll/MelonLoader.dll || echo "Warning: MelonLoader.dll not found"
+        ls -la dump/DummyDll/0Harmony.dll || echo "Warning: 0Harmony.dll not found"
+        
+        # Cleanup
+        rm -rf melonloader_temp melonloader.zip
         
     - name: Restore dependencies
       run: dotnet restore
@@ -29,4 +48,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: MorePlayers-${{ github.sha }}
-        path: bin/Release/net6.0/MorePlayers.dll
+        path: bin/Release/netstandard2.1/MorePlayers.dll

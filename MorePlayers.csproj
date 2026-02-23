@@ -1,26 +1,64 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>MorePlayers</AssemblyName>
     <Description>Increases max player count in Pit of Goblin</Description>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>$(NoWarn);MSB3277;MSB3270</NoWarn>
+  </PropertyGroup>
+
+  <!-- Define paths - можно переопределить через переменные окружения или .props файл -->
+  <PropertyGroup>
+    <GamePath Condition="'$(GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Pit of Goblin</GamePath>
+    <MelonLoaderPath>$(GamePath)\MelonLoader\net6</MelonLoaderPath>
+    <GameAssemblyPath>$(GamePath)\Pit of Goblin_Data\Managed</GameAssemblyPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MelonLoader" Version="0.6.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp">
+    <!-- MelonLoader - пробуем из установленной игры, иначе из dump -->
+    <Reference Include="MelonLoader" Condition="Exists('$(MelonLoaderPath)\MelonLoader.dll')">
+      <HintPath>$(MelonLoaderPath)\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MelonLoader" Condition="!Exists('$(MelonLoaderPath)\MelonLoader.dll')">
+      <HintPath>dump\DummyDll\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
+    <Reference Include="0Harmony" Condition="Exists('$(MelonLoaderPath)\0Harmony.dll')">
+      <HintPath>$(MelonLoaderPath)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony" Condition="!Exists('$(MelonLoaderPath)\0Harmony.dll')">
+      <HintPath>dump\DummyDll\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
+    <!-- Game Assemblies - пробуем из игры, иначе из dump -->
+    <Reference Include="Assembly-CSharp" Condition="Exists('$(GameAssemblyPath)\Assembly-CSharp.dll')">
+      <HintPath>$(GameAssemblyPath)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp" Condition="!Exists('$(GameAssemblyPath)\Assembly-CSharp.dll')">
       <HintPath>dump\DummyDll\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
+    <!-- Unity Engine - всегда из dump (там dummy dll) -->
+    <Reference Include="UnityEngine">
+      <HintPath>dump\DummyDll\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>dump\DummyDll\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    
+    <!-- Networking -->
     <Reference Include="Unity.Netcode.Runtime">
       <HintPath>dump\DummyDll\Unity.Netcode.Runtime.dll</HintPath>
       <Private>false</Private>

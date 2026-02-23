@@ -20,6 +20,30 @@ jobs:
       with:
         dotnet-version: '6.0.x'
     
+    - name: Download MelonLoader
+      run: |
+        cd MorePlayers
+        mkdir -p dump/DummyDll
+        
+        # Download MelonLoader
+        wget https://github.com/LavaGang/MelonLoader/releases/download/v0.6.1/MelonLoader.x64.zip -O melonloader.zip
+        unzip -q melonloader.zip -d melonloader_temp
+        
+        # Copy required DLLs
+        cp melonloader_temp/MelonLoader/MelonLoader.dll dump/DummyDll/ || echo "MelonLoader.dll not found in expected location"
+        cp melonloader_temp/MelonLoader/0Harmony.dll dump/DummyDll/ || echo "0Harmony.dll not found in expected location"
+        
+        # Try alternative paths
+        find melonloader_temp -name "MelonLoader.dll" -exec cp {} dump/DummyDll/ \;
+        find melonloader_temp -name "0Harmony.dll" -exec cp {} dump/DummyDll/ \;
+        
+        # Verify files exist
+        ls -la dump/DummyDll/MelonLoader.dll || echo "Warning: MelonLoader.dll not found"
+        ls -la dump/DummyDll/0Harmony.dll || echo "Warning: 0Harmony.dll not found"
+        
+        # Cleanup
+        rm -rf melonloader_temp melonloader.zip
+    
     - name: Build MorePlayers
       run: |
         cd MorePlayers

@@ -29,6 +29,9 @@ bld/
 *.nupkg
 **/packages/*
 
+# Local build configuration
+Directory.Build.props
+
 # Dump files (keep structure but ignore DLLs)
 dump/DummyDll/*.dll
 dump/script.json
