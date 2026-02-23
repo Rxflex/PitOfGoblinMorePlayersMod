@@ -32,10 +32,17 @@ bld/
 # Local build configuration
 Directory.Build.props
 
-# Dump files (keep structure but ignore DLLs and large files)
+# Dump files - игнорируем все DLL кроме необходимых для сборки
 dump/DummyDll/*.dll
 dump/script.json
 dump/dump.cs
+
+# Но разрешаем необходимые DLL для CI/CD
+!dump/DummyDll/Assembly-CSharp.dll
+!dump/DummyDll/UnityEngine.dll
+!dump/DummyDll/UnityEngine.CoreModule.dll
+!dump/DummyDll/Unity.Netcode.Runtime.dll
+!dump/DummyDll/Unity.Services.Lobbies.dll
 
 # IDE
 .vscode/
