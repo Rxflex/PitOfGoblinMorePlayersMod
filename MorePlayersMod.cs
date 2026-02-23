@@ -63,6 +63,7 @@ namespace MorePlayers
                 
                 LoggerInstance.Msg("[OnInitializeMelon] Initialization complete");
                 LoggerInstance.Msg("[OnInitializeMelon] Waiting for game to start...");
+                LoggerInstance.Msg("[OnInitializeMelon] If game crashes after this message, it's a game/MelonLoader issue, not the mod");
             }
             catch (System.Exception ex)
             {
@@ -72,6 +73,7 @@ namespace MorePlayers
 
         private bool _patchesApplied = false;
         private int _updateCount = 0;
+        private bool _firstUpdateLogged = false;
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
@@ -82,9 +84,7 @@ namespace MorePlayers
                 // Применяем патчи только один раз при загрузке первой сцены
                 if (!_patchesApplied)
                 {
-                    LoggerInstance.Msg("[OnSceneWasLoaded] Applying patches...");
-                    ApplyPatches();
-                    _patchesApplied = true;
+                    LoggerInstance.Msg("[OnSceneWasLoaded] Will apply patches in 60 frames...");
                 }
             }
             catch (System.Exception ex)
@@ -95,30 +95,31 @@ namespace MorePlayers
 
         public override void OnUpdate()
         {
-            // Применяем патчи после 60 кадров (примерно 1 секунда) если сцена не загрузилась
-            if (!_patchesApplied)
+            try
             {
-                _updateCount++;
-                
-                if (_updateCount == 1)
+                // Логируем первый Update
+                if (!_firstUpdateLogged)
                 {
-                    LoggerInstance.Msg("[OnUpdate] First update called, game is running!");
+                    LoggerInstance.Msg("[OnUpdate] First update called - game is running!");
+                    _firstUpdateLogged = true;
                 }
                 
-                if (_updateCount == 60)
+                // Применяем патчи после 60 кадров (примерно 1 секунда) если сцена не загрузилась
+                if (!_patchesApplied)
                 {
-                    try
+                    _updateCount++;
+                    
+                    if (_updateCount == 60)
                     {
-                        LoggerInstance.Msg("[OnUpdate] Applying patches after 60 frames...");
+                        LoggerInstance.Msg("[OnUpdate] 60 frames passed, applying patches...");
                         ApplyPatches();
                         _patchesApplied = true;
                     }
-                    catch (System.Exception ex)
-                    {
-                        LoggerInstance.Error($"[OnUpdate] Error: {ex}");
-                        _patchesApplied = true; // Не пытаемся снова
-                    }
                 }
+            }
+            catch (System.Exception ex)
+            {
+                LoggerInstance.Error($"[OnUpdate] Error: {ex}");
             }
         }
 
