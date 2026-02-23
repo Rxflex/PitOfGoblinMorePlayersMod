@@ -5,7 +5,7 @@ using System.Reflection;
 using Game.Networking;
 
 [assembly: MelonInfo(typeof(MorePlayers.MorePlayersMod), "MorePlayers", "1.0.0", "Rxflex", "https://github.com/Rxflex")]
-[assembly: MelonGame("Bucket Knight", "Pit of Goblin")]
+[assembly: MelonGame("Friendly Foe", "Pit of Goblin")]
 
 namespace MorePlayers
 {
