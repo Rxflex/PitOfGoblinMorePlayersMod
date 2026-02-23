@@ -3,7 +3,6 @@ using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
 using System.Linq;
-using Harmony = HarmonyLib.Harmony;
 
 [assembly: MelonInfo(typeof(MorePlayers.MorePlayersMod), "MorePlayers", "1.0.0", "Rxflex", "https://github.com/Rxflex")]
 [assembly: MelonGame("Friendly Foe", "Pit of Goblin")]
@@ -112,7 +111,7 @@ namespace MorePlayers
                 LoggerInstance.Msg("[ApplyPatches] Starting to apply Harmony patches...");
                 
                 // Создаём новый экземпляр Harmony
-                var harmony = new Harmony("com.rxflex.moreplayers");
+                var harmony = new HarmonyLib.Harmony("com.rxflex.moreplayers");
                 LoggerInstance.Msg($"[ApplyPatches] Created Harmony instance: {harmony.Id}");
                 
                 // Получаем тип NetworkHandler через Assembly-CSharp
