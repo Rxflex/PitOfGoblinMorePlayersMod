@@ -129,8 +129,9 @@ namespace MorePlayers
             {
                 LoggerInstance.Msg("[ApplyPatches] Starting to apply Harmony patches...");
                 
-                var harmony = HarmonyInstance;
-                LoggerInstance.Msg($"[ApplyPatches] Harmony instance ID: {harmony.Id}");
+                // Создаём новый экземпляр Harmony вместо использования HarmonyInstance
+                var harmony = new Harmony("com.rxflex.moreplayers");
+                LoggerInstance.Msg($"[ApplyPatches] Created Harmony instance: {harmony.Id}");
                 
                 // Получаем тип NetworkHandler через Assembly-CSharp
                 LoggerInstance.Msg("[ApplyPatches] Looking for Game.Networking.NetworkHandler type...");
