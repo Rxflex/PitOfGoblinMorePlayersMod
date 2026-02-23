@@ -2,7 +2,6 @@ using MelonLoader;
 using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
-using Game.Networking;
 
 [assembly: MelonInfo(typeof(MorePlayers.MorePlayersMod), "MorePlayers", "1.0.0", "Rxflex", "https://github.com/Rxflex")]
 [assembly: MelonGame("Friendly Foe", "Pit of Goblin")]
@@ -57,19 +56,84 @@ namespace MorePlayers
             LoggerInstance.Msg($"You can change MaxPlayers in the config file");
             LoggerInstance.Msg("========================================");
         }
-    }
 
-    [HarmonyPatch(typeof(NetworkHandler))]
-    public static class NetworkHandlerPatches
-    {
-        // Патч для увеличения максимального количества клиентов
-        [HarmonyPatch("Awake")]
-        [HarmonyPrefix]
-        public static void Awake_Prefix(NetworkHandler __instance)
+        // Переопределяем HarmonyInit чтобы избежать автоматического сканирования атрибутов
+        public override void OnLateInitializeMelon()
+        {
+            // Применяем патчи вручную после полной инициализации
+            ApplyPatches();
+        }
+
+        private void ApplyPatches()
         {
             try
             {
-                var field = AccessTools.Field(typeof(NetworkHandler), "m_maxClientCount");
+                var harmony = HarmonyInstance;
+                
+                // Получаем тип NetworkHandler
+                var networkHandlerType = AccessTools.TypeByName("Game.Networking.NetworkHandler");
+                if (networkHandlerType == null)
+                {
+                    LoggerInstance.Error("Failed to find NetworkHandler type!");
+                    return;
+                }
+
+                // Патч для Awake
+                var awakeMethod = AccessTools.Method(networkHandlerType, "Awake");
+                if (awakeMethod != null)
+                {
+                    var awakePrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.Awake_Prefix));
+                    harmony.Patch(awakeMethod, prefix: new HarmonyMethod(awakePrefix));
+                    LoggerInstance.Msg("Patched NetworkHandler.Awake");
+                }
+                else
+                {
+                    LoggerInstance.Warning("NetworkHandler.Awake method not found");
+                }
+
+                // Патч для CreateLobbyAsync
+                var createLobbyMethod = AccessTools.Method(networkHandlerType, "CreateLobbyAsync", new[] { typeof(string), typeof(int) });
+                if (createLobbyMethod != null)
+                {
+                    var createLobbyPrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.CreateLobbyAsync_Prefix));
+                    harmony.Patch(createLobbyMethod, prefix: new HarmonyMethod(createLobbyPrefix));
+                    LoggerInstance.Msg("Patched NetworkHandler.CreateLobbyAsync");
+                }
+                else
+                {
+                    LoggerInstance.Warning("NetworkHandler.CreateLobbyAsync method not found");
+                }
+
+                // Патч для OnApprovingConnection
+                var onApprovingMethod = AccessTools.Method(networkHandlerType, "OnApprovingConnection");
+                if (onApprovingMethod != null)
+                {
+                    var onApprovingPrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.OnApprovingConnection_Prefix));
+                    harmony.Patch(onApprovingMethod, prefix: new HarmonyMethod(onApprovingPrefix));
+                    LoggerInstance.Msg("Patched NetworkHandler.OnApprovingConnection");
+                }
+                else
+                {
+                    LoggerInstance.Warning("NetworkHandler.OnApprovingConnection method not found");
+                }
+
+                LoggerInstance.Msg("All patches applied successfully!");
+            }
+            catch (System.Exception ex)
+            {
+                LoggerInstance.Error($"Failed to apply patches: {ex}");
+            }
+        }
+    }
+
+    public static class NetworkHandlerPatches
+    {
+        // Патч для увеличения максимального количества клиентов
+        public static void Awake_Prefix(object __instance)
+        {
+            try
+            {
+                var field = AccessTools.Field(__instance.GetType(), "m_maxClientCount");
                 if (field != null)
                 {
                     field.SetValue(__instance, MorePlayersMod.MaxPlayers);
@@ -87,8 +151,6 @@ namespace MorePlayers
         }
 
         // Патч для CreateLobbyAsync - увеличиваем maxPlayers при создании лобби
-        [HarmonyPatch("CreateLobbyAsync", new System.Type[] { typeof(string), typeof(int) })]
-        [HarmonyPrefix]
         public static void CreateLobbyAsync_Prefix(ref int maxPlayers)
         {
             MelonLogger.Msg($"[NetworkHandler.CreateLobbyAsync] Original maxPlayers: {maxPlayers}");
@@ -97,8 +159,6 @@ namespace MorePlayers
         }
 
         // Патч для проверки подключения клиентов
-        [HarmonyPatch("OnApprovingConnection")]
-        [HarmonyPrefix]
         public static void OnApprovingConnection_Prefix()
         {
             MelonLogger.Msg($"[NetworkHandler.OnApprovingConnection] Client attempting to connect (Max: {MorePlayersMod.MaxPlayers})");
