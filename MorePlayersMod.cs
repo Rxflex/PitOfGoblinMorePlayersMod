@@ -22,106 +22,146 @@ namespace MorePlayers
 
         public override void OnInitializeMelon()
         {
-            // Создаем категорию конфигурации с дефолтным значением 20
-            _configCategory = MelonPreferences.CreateCategory("MorePlayers");
-            _maxPlayersEntry = _configCategory.CreateEntry(
-                "MaxPlayers", 
-                MOD_DEFAULT_MAX_PLAYERS, 
-                "Maximum number of players (default: 20, can be changed to any value like 6, 8, 12, etc.)"
-            );
-
-            // Загружаем значение из конфига
-            MaxPlayers = _maxPlayersEntry.Value;
-
-            // Валидация значения
-            if (MaxPlayers < MIN_PLAYERS)
+            try
             {
-                LoggerInstance.Warning($"MaxPlayers value {MaxPlayers} is too low. Setting to minimum: {MIN_PLAYERS}");
-                MaxPlayers = MIN_PLAYERS;
-                _maxPlayersEntry.Value = MIN_PLAYERS;
+                LoggerInstance.Msg("[OnInitializeMelon] Starting initialization...");
+                
+                // Создаем категорию конфигурации с дефолтным значением 20
+                _configCategory = MelonPreferences.CreateCategory("MorePlayers");
+                _maxPlayersEntry = _configCategory.CreateEntry(
+                    "MaxPlayers", 
+                    MOD_DEFAULT_MAX_PLAYERS, 
+                    "Maximum number of players (default: 20, can be changed to any value like 6, 8, 12, etc.)"
+                );
+
+                // Загружаем значение из конфига
+                MaxPlayers = _maxPlayersEntry.Value;
+
+                // Валидация значения
+                if (MaxPlayers < MIN_PLAYERS)
+                {
+                    LoggerInstance.Warning($"MaxPlayers value {MaxPlayers} is too low. Setting to minimum: {MIN_PLAYERS}");
+                    MaxPlayers = MIN_PLAYERS;
+                    _maxPlayersEntry.Value = MIN_PLAYERS;
+                }
+                else if (MaxPlayers > MAX_PLAYERS_LIMIT)
+                {
+                    LoggerInstance.Warning($"MaxPlayers value {MaxPlayers} is too high. Setting to maximum: {MAX_PLAYERS_LIMIT}");
+                    MaxPlayers = MAX_PLAYERS_LIMIT;
+                    _maxPlayersEntry.Value = MAX_PLAYERS_LIMIT;
+                }
+
+                _configCategory.SaveToFile();
+
+                LoggerInstance.Msg("========================================");
+                LoggerInstance.Msg("MorePlayers mod initialized!");
+                LoggerInstance.Msg($"Max players set to: {MaxPlayers}");
+                LoggerInstance.Msg($"Game default limit: {GAME_DEFAULT_MAX_PLAYERS}");
+                LoggerInstance.Msg($"You can change MaxPlayers in the config file");
+                LoggerInstance.Msg("========================================");
+                
+                LoggerInstance.Msg("[OnInitializeMelon] Initialization complete, waiting for scene load...");
             }
-            else if (MaxPlayers > MAX_PLAYERS_LIMIT)
+            catch (System.Exception ex)
             {
-                LoggerInstance.Warning($"MaxPlayers value {MaxPlayers} is too high. Setting to maximum: {MAX_PLAYERS_LIMIT}");
-                MaxPlayers = MAX_PLAYERS_LIMIT;
-                _maxPlayersEntry.Value = MAX_PLAYERS_LIMIT;
+                LoggerInstance.Error($"[OnInitializeMelon] Error during initialization: {ex}");
             }
-
-            _configCategory.SaveToFile();
-
-            LoggerInstance.Msg("========================================");
-            LoggerInstance.Msg("MorePlayers mod initialized!");
-            LoggerInstance.Msg($"Max players set to: {MaxPlayers}");
-            LoggerInstance.Msg($"Game default limit: {GAME_DEFAULT_MAX_PLAYERS}");
-            LoggerInstance.Msg($"You can change MaxPlayers in the config file");
-            LoggerInstance.Msg("========================================");
         }
 
-        // Переопределяем HarmonyInit чтобы избежать автоматического сканирования атрибутов
-        public override void OnLateInitializeMelon()
+        private bool _patchesApplied = false;
+
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            // Применяем патчи вручную после полной инициализации
-            ApplyPatches();
+            try
+            {
+                LoggerInstance.Msg($"[OnSceneWasLoaded] Scene loaded: {sceneName} (index: {buildIndex})");
+                
+                // Применяем патчи только один раз при загрузке первой сцены
+                if (!_patchesApplied)
+                {
+                    LoggerInstance.Msg("[OnSceneWasLoaded] Applying patches...");
+                    ApplyPatches();
+                    _patchesApplied = true;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                LoggerInstance.Error($"[OnSceneWasLoaded] Error: {ex}");
+            }
         }
 
         private void ApplyPatches()
         {
             try
             {
+                LoggerInstance.Msg("[ApplyPatches] Starting to apply Harmony patches...");
+                
                 var harmony = HarmonyInstance;
+                LoggerInstance.Msg($"[ApplyPatches] Harmony instance ID: {harmony.Id}");
                 
                 // Получаем тип NetworkHandler
+                LoggerInstance.Msg("[ApplyPatches] Looking for Game.Networking.NetworkHandler type...");
                 var networkHandlerType = AccessTools.TypeByName("Game.Networking.NetworkHandler");
                 if (networkHandlerType == null)
                 {
-                    LoggerInstance.Error("Failed to find NetworkHandler type!");
+                    LoggerInstance.Error("[ApplyPatches] Failed to find NetworkHandler type!");
+                    LoggerInstance.Error("[ApplyPatches] The mod will not work. Please check if the game was updated.");
                     return;
                 }
+                LoggerInstance.Msg($"[ApplyPatches] Found NetworkHandler type: {networkHandlerType.FullName}");
 
                 // Патч для Awake
+                LoggerInstance.Msg("[ApplyPatches] Patching NetworkHandler.Awake...");
                 var awakeMethod = AccessTools.Method(networkHandlerType, "Awake");
                 if (awakeMethod != null)
                 {
                     var awakePrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.Awake_Prefix));
                     harmony.Patch(awakeMethod, prefix: new HarmonyMethod(awakePrefix));
-                    LoggerInstance.Msg("Patched NetworkHandler.Awake");
+                    LoggerInstance.Msg("[ApplyPatches] ✓ Patched NetworkHandler.Awake");
                 }
                 else
                 {
-                    LoggerInstance.Warning("NetworkHandler.Awake method not found");
+                    LoggerInstance.Warning("[ApplyPatches] NetworkHandler.Awake method not found");
                 }
 
                 // Патч для CreateLobbyAsync
+                LoggerInstance.Msg("[ApplyPatches] Patching NetworkHandler.CreateLobbyAsync...");
                 var createLobbyMethod = AccessTools.Method(networkHandlerType, "CreateLobbyAsync", new[] { typeof(string), typeof(int) });
                 if (createLobbyMethod != null)
                 {
                     var createLobbyPrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.CreateLobbyAsync_Prefix));
                     harmony.Patch(createLobbyMethod, prefix: new HarmonyMethod(createLobbyPrefix));
-                    LoggerInstance.Msg("Patched NetworkHandler.CreateLobbyAsync");
+                    LoggerInstance.Msg("[ApplyPatches] ✓ Patched NetworkHandler.CreateLobbyAsync");
                 }
                 else
                 {
-                    LoggerInstance.Warning("NetworkHandler.CreateLobbyAsync method not found");
+                    LoggerInstance.Warning("[ApplyPatches] NetworkHandler.CreateLobbyAsync method not found");
                 }
 
                 // Патч для OnApprovingConnection
+                LoggerInstance.Msg("[ApplyPatches] Patching NetworkHandler.OnApprovingConnection...");
                 var onApprovingMethod = AccessTools.Method(networkHandlerType, "OnApprovingConnection");
                 if (onApprovingMethod != null)
                 {
                     var onApprovingPrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.OnApprovingConnection_Prefix));
                     harmony.Patch(onApprovingMethod, prefix: new HarmonyMethod(onApprovingPrefix));
-                    LoggerInstance.Msg("Patched NetworkHandler.OnApprovingConnection");
+                    LoggerInstance.Msg("[ApplyPatches] ✓ Patched NetworkHandler.OnApprovingConnection");
                 }
                 else
                 {
-                    LoggerInstance.Warning("NetworkHandler.OnApprovingConnection method not found");
+                    LoggerInstance.Warning("[ApplyPatches] NetworkHandler.OnApprovingConnection method not found");
                 }
 
-                LoggerInstance.Msg("All patches applied successfully!");
+                LoggerInstance.Msg("========================================");
+                LoggerInstance.Msg("[ApplyPatches] All patches applied successfully!");
+                LoggerInstance.Msg("========================================");
             }
             catch (System.Exception ex)
             {
-                LoggerInstance.Error($"Failed to apply patches: {ex}");
+                LoggerInstance.Error("========================================");
+                LoggerInstance.Error($"[ApplyPatches] CRITICAL ERROR: Failed to apply patches!");
+                LoggerInstance.Error($"[ApplyPatches] Exception: {ex}");
+                LoggerInstance.Error("========================================");
             }
         }
     }
