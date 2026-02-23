@@ -11,6 +11,12 @@
     <NoWarn>$(NoWarn);MSB3277;MSB3270</NoWarn>
   </PropertyGroup>
 
+  <!-- Исключаем dump папку из компиляции -->
+  <ItemGroup>
+    <Compile Remove="dump/**" />
+    <None Include="dump/**" />
+  </ItemGroup>
+
   <!-- Define paths - можно переопределить через переменные окружения или .props файл -->
   <PropertyGroup>
     <GamePath Condition="'$(GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Pit of Goblin</GamePath>

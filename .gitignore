@@ -32,9 +32,10 @@ bld/
 # Local build configuration
 Directory.Build.props
 
-# Dump files (keep structure but ignore DLLs)
+# Dump files (keep structure but ignore DLLs and large files)
 dump/DummyDll/*.dll
 dump/script.json
+dump/dump.cs
 
 # IDE
 .vscode/
