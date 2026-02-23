@@ -9,12 +9,13 @@
 ```
 [MorePlayers] ========================================
 [MorePlayers] MorePlayers mod initialized!
-[MorePlayers] Max players set to: 8
-[MorePlayers] Default game limit: 4
+[MorePlayers] Max players set to: 20
+[MorePlayers] Game default limit: 4
+[MorePlayers] You can change MaxPlayers in the config file
 [MorePlayers] ========================================
 ```
 
-### 2. Создание лобби на 8 игроков
+### 2. Создание лобби на 20 игроков
 
 1. Запустите игру
 2. Выберите "Multiplayer" → "Create Lobby"
@@ -22,9 +23,9 @@
 4. В консоли появится:
    ```
    [NetworkHandler.CreateLobbyAsync] Original maxPlayers: 4
-   [NetworkHandler.CreateLobbyAsync] Changed maxPlayers to: 8
+   [NetworkHandler.CreateLobbyAsync] Changed maxPlayers to: 20
    ```
-5. Теперь в ваше лобби могут зайти до 8 игроков
+5. Теперь в ваше лобби могут зайти до 20 игроков
 
 ### 3. Подключение к лобби
 
@@ -60,19 +61,25 @@
 MaxPlayers = 6
 ```
 
-#### Для большой компании (12 игроков)
+#### Для средней компании (12 игроков)
 ```ini
 [MorePlayers]
 MaxPlayers = 12
 ```
 
-#### Максимальное значение (16 игроков)
+#### По умолчанию (20 игроков)
 ```ini
 [MorePlayers]
-MaxPlayers = 16
+MaxPlayers = 20
 ```
 
-⚠️ **Внимание:** Значения больше 12 могут вызвать проблемы с производительностью!
+#### Для больших серверов (50 игроков)
+```ini
+[MorePlayers]
+MaxPlayers = 50
+```
+
+⚠️ **Внимание:** Значения больше 20 могут вызвать проблемы с производительностью в зависимости от вашего оборудования!
 
 ## Сценарии использования
 
@@ -88,11 +95,11 @@ MaxPlayers = 16
 
 ### Сценарий 2: Турнир
 
-**Ситуация:** Вы организуете турнир на 10 человек.
+**Ситуация:** Вы организуете турнир на 20 человек.
 
 **Решение:**
 1. Установите мод всем участникам
-2. Установите `MaxPlayers = 10` в конфиге
+2. Используйте дефолтное значение `MaxPlayers = 20` в конфиге
 3. Создайте лобби для турнира
 4. Все участники подключаются
 
@@ -138,13 +145,14 @@ MaxPlayers = 16
 ```
 [00:00:01.234] [MorePlayers] ========================================
 [00:00:01.234] [MorePlayers] MorePlayers mod initialized!
-[00:00:01.234] [MorePlayers] Max players set to: 8
-[00:00:01.234] [MorePlayers] Default game limit: 4
+[00:00:01.234] [MorePlayers] Max players set to: 20
+[00:00:01.234] [MorePlayers] Game default limit: 4
+[00:00:01.234] [MorePlayers] You can change MaxPlayers in the config file
 [00:00:01.234] [MorePlayers] ========================================
-[00:00:15.678] [NetworkHandler.Awake] Set m_maxClientCount to 8
+[00:00:15.678] [NetworkHandler.Awake] Set m_maxClientCount to 20
 [00:00:30.123] [NetworkHandler.CreateLobbyAsync] Original maxPlayers: 4
-[00:00:30.123] [NetworkHandler.CreateLobbyAsync] Changed maxPlayers to: 8
-[00:00:45.456] [NetworkHandler.OnApprovingConnection] Client attempting to connect (Max: 8)
+[00:00:30.123] [NetworkHandler.CreateLobbyAsync] Changed maxPlayers to: 20
+[00:00:45.456] [NetworkHandler.OnApprovingConnection] Client attempting to connect (Max: 20)
 ```
 
 ## Частые вопросы
@@ -156,7 +164,7 @@ MaxPlayers = 16
 **A:** Нет, в текущей версии нужно перезапустить игру после изменения конфига.
 
 ### Q: Какое максимальное количество игроков рекомендуется?
-**A:** Рекомендуется не превышать 12 игроков для стабильной работы. Значения выше могут вызвать проблемы с производительностью.
+**A:** По умолчанию мод устанавливает лимит в 20 игроков. Для стабильной работы на большинстве систем рекомендуется не превышать это значение. Однако вы можете экспериментировать с разными значениями в зависимости от вашего оборудования.
 
 ### Q: Что делать, если игра крашится?
 **A:** 
