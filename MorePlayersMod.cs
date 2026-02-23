@@ -1,7 +1,6 @@
 using MelonLoader;
 
 [assembly: MelonInfo(typeof(MorePlayers.MorePlayersMod), "MorePlayers", "1.0.0", "Rxflex")]
-[assembly: MelonGame("Friendly Foe", "Pit of Goblin")]
 
 namespace MorePlayers
 {
