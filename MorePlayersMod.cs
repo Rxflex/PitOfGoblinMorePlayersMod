@@ -60,7 +60,9 @@ namespace MorePlayers
                 LoggerInstance.Msg($"You can change MaxPlayers in the config file");
                 LoggerInstance.Msg("========================================");
                 
-                LoggerInstance.Msg("[OnInitializeMelon] Initialization complete, waiting for scene load...");
+                LoggerInstance.Msg("[OnInitializeMelon] Initialization complete");
+                LoggerInstance.Msg("[OnInitializeMelon] NOTE: If game crashes now, it's NOT caused by this mod");
+                LoggerInstance.Msg("[OnInitializeMelon] Patches will be applied when first scene loads");
             }
             catch (System.Exception ex)
             {
@@ -87,6 +89,25 @@ namespace MorePlayers
             catch (System.Exception ex)
             {
                 LoggerInstance.Error($"[OnSceneWasLoaded] Error: {ex}");
+            }
+        }
+
+        public override void OnUpdate()
+        {
+            // Применяем патчи в первом Update если сцена не загрузилась
+            if (!_patchesApplied)
+            {
+                try
+                {
+                    LoggerInstance.Msg("[OnUpdate] First update called, applying patches as fallback...");
+                    ApplyPatches();
+                    _patchesApplied = true;
+                }
+                catch (System.Exception ex)
+                {
+                    LoggerInstance.Error($"[OnUpdate] Error: {ex}");
+                    _patchesApplied = true; // Не пытаемся снова
+                }
             }
         }
 
