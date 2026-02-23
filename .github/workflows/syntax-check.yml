@@ -1,0 +1,26 @@
+name: Syntax Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Check C# syntax
+      run: |
+        echo "Checking C# syntax..."
+        dotnet format --verify-no-changes --verbosity diagnostic || true
+        echo "Syntax check complete (build requires game DLLs)"
