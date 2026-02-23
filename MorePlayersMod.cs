@@ -3,6 +3,7 @@ using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
 using System.Linq;
+using Harmony = HarmonyLib.Harmony;
 
 [assembly: MelonInfo(typeof(MorePlayers.MorePlayersMod), "MorePlayers", "1.0.0", "Rxflex", "https://github.com/Rxflex")]
 [assembly: MelonGame("Friendly Foe", "Pit of Goblin")]
@@ -16,8 +17,8 @@ namespace MorePlayers
         private const int MIN_PLAYERS = 2;
         private const int MAX_PLAYERS_LIMIT = 100;
 
-        private static MelonPreferences_Category _configCategory;
-        private static MelonPreferences_Entry<int> _maxPlayersEntry;
+        private static MelonPreferences_Category? _configCategory;
+        private static MelonPreferences_Entry<int>? _maxPlayersEntry;
 
         public static int MaxPlayers { get; private set; } = MOD_DEFAULT_MAX_PLAYERS;
 
