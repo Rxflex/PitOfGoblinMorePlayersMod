@@ -20,8 +20,6 @@ namespace MorePlayers
 
         public static int MaxPlayers { get; private set; } = MOD_DEFAULT_MAX_PLAYERS;
 
-        // КРИТИЧЕСКИ ВАЖНО: переопределяем HarmonyInit чтобы MelonLoader не пытался
-        // автоматически сканировать Harmony атрибуты (это вызывает краш в Il2Cpp)
         public override void OnInitializeMelon()
         {
             try
@@ -71,14 +69,8 @@ namespace MorePlayers
             }
         }
 
-        // Пустой HarmonyInit чтобы предотвратить автоматическое сканирование атрибутов
-        public override void HarmonyInit()
-        {
-            LoggerInstance.Msg("[HarmonyInit] Skipping automatic Harmony patching (will patch manually)");
-            // НЕ вызываем base.HarmonyInit() - это важно!
-        }
-
         private bool _patchesApplied = false;
+        private int _updateCount = 0;
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
@@ -102,19 +94,29 @@ namespace MorePlayers
 
         public override void OnUpdate()
         {
-            // Применяем патчи в первом Update если сцена не загрузилась
+            // Применяем патчи после 60 кадров (примерно 1 секунда) если сцена не загрузилась
             if (!_patchesApplied)
             {
-                try
+                _updateCount++;
+                
+                if (_updateCount == 1)
                 {
-                    LoggerInstance.Msg("[OnUpdate] First update called, applying patches as fallback...");
-                    ApplyPatches();
-                    _patchesApplied = true;
+                    LoggerInstance.Msg("[OnUpdate] First update called, game is running!");
                 }
-                catch (System.Exception ex)
+                
+                if (_updateCount == 60)
                 {
-                    LoggerInstance.Error($"[OnUpdate] Error: {ex}");
-                    _patchesApplied = true; // Не пытаемся снова
+                    try
+                    {
+                        LoggerInstance.Msg("[OnUpdate] Applying patches after 60 frames...");
+                        ApplyPatches();
+                        _patchesApplied = true;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        LoggerInstance.Error($"[OnUpdate] Error: {ex}");
+                        _patchesApplied = true; // Не пытаемся снова
+                    }
                 }
             }
         }
