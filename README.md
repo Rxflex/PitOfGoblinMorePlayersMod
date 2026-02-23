@@ -51,7 +51,22 @@ Change `20` to any number between 2 and 100.
 ### Prerequisites
 - [.NET SDK 6.0](https://dotnet.microsoft.com/download) or later
 - Git
-- Game DLLs (see `dump/README.md`)
+- **Game DLLs** (see `dump/README.md`)
+
+### Important: Game DLLs Required
+
+This mod requires DLLs from your game installation to compile. These are NOT included in the repository.
+
+**Get the DLLs:**
+1. Install MelonLoader in your game
+2. Copy these files from `<Game Folder>/MelonLoader/` to `dump/DummyDll/`:
+   - `net6/MelonLoader.dll`
+   - `net6/0Harmony.dll`
+3. Copy from `<Game Folder>/MelonLoader/Il2CppAssemblies/`:
+   - `Assembly-CSharp.dll`
+   - `Unity.Netcode.Runtime.dll`
+   - `UnityEngine.dll`
+   - `UnityEngine.CoreModule.dll`
 
 ### Build Steps
 
@@ -59,6 +74,8 @@ Change `20` to any number between 2 and 100.
 # Clone the repository
 git clone https://github.com/Rxflex/MorePlayers.git
 cd MorePlayers
+
+# Copy game DLLs to dump/DummyDll/ (see above)
 
 # Restore dependencies
 dotnet restore
@@ -70,6 +87,16 @@ dotnet build -c Release
 The compiled DLL will be in `bin/Release/net6.0/MorePlayers.dll`
 
 Or simply run `build.bat` on Windows.
+
+### CI/CD Note
+
+GitHub Actions builds are **manual only** (`workflow_dispatch`) because game DLLs cannot be included in the repository. To create a release:
+
+1. Build locally with game DLLs
+2. Create a tag: `git tag v1.0.0`
+3. Push tag: `git push origin v1.0.0`
+4. Manually run "Build and Release" workflow
+5. Upload the DLL as release asset
 
 ## 📋 Requirements
 
