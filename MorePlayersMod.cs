@@ -20,6 +20,8 @@ namespace MorePlayers
 
         public static int MaxPlayers { get; private set; } = MOD_DEFAULT_MAX_PLAYERS;
 
+        // КРИТИЧЕСКИ ВАЖНО: переопределяем HarmonyInit чтобы MelonLoader не пытался
+        // автоматически сканировать Harmony атрибуты (это вызывает краш в Il2Cpp)
         public override void OnInitializeMelon()
         {
             try
@@ -61,13 +63,19 @@ namespace MorePlayers
                 LoggerInstance.Msg("========================================");
                 
                 LoggerInstance.Msg("[OnInitializeMelon] Initialization complete");
-                LoggerInstance.Msg("[OnInitializeMelon] NOTE: If game crashes now, it's NOT caused by this mod");
-                LoggerInstance.Msg("[OnInitializeMelon] Patches will be applied when first scene loads");
+                LoggerInstance.Msg("[OnInitializeMelon] Waiting for game to start...");
             }
             catch (System.Exception ex)
             {
                 LoggerInstance.Error($"[OnInitializeMelon] Error during initialization: {ex}");
             }
+        }
+
+        // Пустой HarmonyInit чтобы предотвратить автоматическое сканирование атрибутов
+        public override void HarmonyInit()
+        {
+            LoggerInstance.Msg("[HarmonyInit] Skipping automatic Harmony patching (will patch manually)");
+            // НЕ вызываем base.HarmonyInit() - это важно!
         }
 
         private bool _patchesApplied = false;
