@@ -1,0 +1,115 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout MorePlayers repository
+      uses: actions/checkout@v4
+      with:
+        path: MorePlayers
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Build MorePlayers
+      run: |
+        cd MorePlayers
+        dotnet build -c Release
+    
+    - name: Create release package
+      run: |
+        mkdir -p release/Mods
+        
+        # Copy MorePlayers.dll with error handling
+        MOREDLL=$(find MorePlayers -name "MorePlayers.dll" -path "*/bin/Release/*" | head -1)
+        [ -z "$MOREDLL" ] && echo "Error: MorePlayers.dll not found" && exit 1
+        cp "$MOREDLL" release/Mods/
+        
+        # Copy documentation
+        cp MorePlayers/README.md release/
+        cp MorePlayers/QUICKSTART.md release/
+        cp MorePlayers/CHANGELOG.md release/
+        cp MorePlayers/LICENSE release/
+        
+        # Create installation instructions
+        cat > release/INSTALL.txt << 'EOF'
+        MorePlayers Mod Installation
+        =============================
+        
+        1. Install MelonLoader to your Pit of Goblin game folder
+           Download: https://github.com/LavaGang/MelonLoader/releases
+        
+        2. Copy MorePlayers.dll from the Mods folder to:
+           <Game Folder>\Mods\
+        
+        3. Launch the game
+        
+        4. (Optional) Configure max players in:
+           <Game Folder>\UserData\MelonPreferences.cfg
+           
+           [MorePlayers]
+           MaxPlayers = 20
+        
+        For more information, see README.md
+        EOF
+    
+    - name: Create zip archive
+      run: |
+        cd release
+        zip -r ../MorePlayers-${{ github.ref_name }}.zip .
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: MorePlayers-${{ github.ref_name }}.zip
+        body: |
+          ## MorePlayers Mod v${{ github.ref_name }}
+          
+          Увеличивает лимит игроков в Pit of Goblin с 4 до 20 (настраивается).
+          
+          ### 📥 Установка
+          
+          1. Скачайте `MorePlayers-${{ github.ref_name }}.zip`
+          2. Установите [MelonLoader](https://github.com/LavaGang/MelonLoader/releases) в папку игры
+          3. Извлеките `MorePlayers.dll` из архива в `<Игра>\Mods\`
+          4. Запустите игру
+          
+          ### ⚙️ Настройка
+          
+          По умолчанию лимит установлен на **20 игроков**.
+          
+          Чтобы изменить (например, на 6, 8, 12):
+          1. Откройте `<Игра>\UserData\MelonPreferences.cfg`
+          2. Найдите секцию `[MorePlayers]`
+          3. Измените `MaxPlayers = 20` на нужное значение
+          
+          ### 📋 Требования
+          
+          - MelonLoader 0.6.1 или выше
+          - Pit of Goblin (Steam версия)
+          
+          ### 📝 Изменения
+          
+          См. [CHANGELOG.md](https://github.com/Rxflex/MorePlayers/blob/main/CHANGELOG.md)
+          
+          ### ⚠️ Важно
+          
+          - Все игроки должны иметь установленный мод
+          - У всех должно быть одинаковое значение MaxPlayers
+          
+          ---
+          
+          **Полная документация:** [README.md](https://github.com/Rxflex/MorePlayers)
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
