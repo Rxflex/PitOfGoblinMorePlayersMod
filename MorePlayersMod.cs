@@ -62,8 +62,7 @@ namespace MorePlayers
                 LoggerInstance.Msg("========================================");
                 
                 LoggerInstance.Msg("[OnInitializeMelon] Initialization complete");
-                LoggerInstance.Msg("[OnInitializeMelon] Waiting for game to start...");
-                LoggerInstance.Msg("[OnInitializeMelon] If game crashes after this message, it's a game/MelonLoader issue, not the mod");
+                LoggerInstance.Msg("[OnInitializeMelon] Waiting for game to fully load before applying patches...");
             }
             catch (System.Exception ex)
             {
@@ -72,20 +71,12 @@ namespace MorePlayers
         }
 
         private bool _patchesApplied = false;
-        private int _updateCount = 0;
-        private bool _firstUpdateLogged = false;
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             try
             {
                 LoggerInstance.Msg($"[OnSceneWasLoaded] Scene loaded: {sceneName} (index: {buildIndex})");
-                
-                // Применяем патчи только один раз при загрузке первой сцены
-                if (!_patchesApplied)
-                {
-                    LoggerInstance.Msg("[OnSceneWasLoaded] Will apply patches in 60 frames...");
-                }
             }
             catch (System.Exception ex)
             {
@@ -93,33 +84,23 @@ namespace MorePlayers
             }
         }
 
-        public override void OnUpdate()
+        public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
             try
             {
-                // Логируем первый Update
-                if (!_firstUpdateLogged)
-                {
-                    LoggerInstance.Msg("[OnUpdate] First update called - game is running!");
-                    _firstUpdateLogged = true;
-                }
+                LoggerInstance.Msg($"[OnSceneWasInitialized] Scene initialized: {sceneName} (index: {buildIndex})");
                 
-                // Применяем патчи после 60 кадров (примерно 1 секунда) если сцена не загрузилась
+                // Применяем патчи только один раз при инициализации первой сцены
                 if (!_patchesApplied)
                 {
-                    _updateCount++;
-                    
-                    if (_updateCount == 60)
-                    {
-                        LoggerInstance.Msg("[OnUpdate] 60 frames passed, applying patches...");
-                        ApplyPatches();
-                        _patchesApplied = true;
-                    }
+                    LoggerInstance.Msg("[OnSceneWasInitialized] Applying patches now that scene is initialized...");
+                    ApplyPatches();
+                    _patchesApplied = true;
                 }
             }
             catch (System.Exception ex)
             {
-                LoggerInstance.Error($"[OnUpdate] Error: {ex}");
+                LoggerInstance.Error($"[OnSceneWasInitialized] Error: {ex}");
             }
         }
 
@@ -129,7 +110,7 @@ namespace MorePlayers
             {
                 LoggerInstance.Msg("[ApplyPatches] Starting to apply Harmony patches...");
                 
-                // Создаём новый экземпляр Harmony вместо использования HarmonyInstance
+                // Создаём новый экземпляр Harmony
                 var harmony = new Harmony("com.rxflex.moreplayers");
                 LoggerInstance.Msg($"[ApplyPatches] Created Harmony instance: {harmony.Id}");
                 
@@ -142,7 +123,8 @@ namespace MorePlayers
                 
                 if (assemblyCSharp == null)
                 {
-                    LoggerInstance.Error("[ApplyPatches] Assembly-CSharp not found!");
+                    LoggerInstance.Error("[ApplyPatches] Assembly-CSharp not found! Game may not be fully loaded yet.");
+                    LoggerInstance.Error("[ApplyPatches] Mod will not work. Try restarting the game.");
                     return;
                 }
                 
@@ -153,9 +135,19 @@ namespace MorePlayers
                 {
                     LoggerInstance.Error("[ApplyPatches] Failed to find NetworkHandler type!");
                     LoggerInstance.Error("[ApplyPatches] The mod will not work. Please check if the game was updated.");
+                    LoggerInstance.Error("[ApplyPatches] Available types in Assembly-CSharp:");
+                    
+                    // Выводим первые 20 типов для отладки
+                    var types = assemblyCSharp.GetTypes().Take(20);
+                    foreach (var t in types)
+                    {
+                        LoggerInstance.Error($"  - {t.FullName}");
+                    }
                     return;
                 }
                 LoggerInstance.Msg($"[ApplyPatches] Found NetworkHandler type: {networkHandlerType.FullName}");
+
+                int patchedCount = 0;
 
                 // Патч для Awake
                 LoggerInstance.Msg("[ApplyPatches] Patching NetworkHandler.Awake...");
@@ -165,6 +157,7 @@ namespace MorePlayers
                     var awakePrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.Awake_Prefix));
                     harmony.Patch(awakeMethod, prefix: new HarmonyMethod(awakePrefix));
                     LoggerInstance.Msg("[ApplyPatches] ✓ Patched NetworkHandler.Awake");
+                    patchedCount++;
                 }
                 else
                 {
@@ -179,6 +172,7 @@ namespace MorePlayers
                     var createLobbyPrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.CreateLobbyAsync_Prefix));
                     harmony.Patch(createLobbyMethod, prefix: new HarmonyMethod(createLobbyPrefix));
                     LoggerInstance.Msg("[ApplyPatches] ✓ Patched NetworkHandler.CreateLobbyAsync");
+                    patchedCount++;
                 }
                 else
                 {
@@ -193,6 +187,7 @@ namespace MorePlayers
                     var onApprovingPrefix = AccessTools.Method(typeof(NetworkHandlerPatches), nameof(NetworkHandlerPatches.OnApprovingConnection_Prefix));
                     harmony.Patch(onApprovingMethod, prefix: new HarmonyMethod(onApprovingPrefix));
                     LoggerInstance.Msg("[ApplyPatches] ✓ Patched NetworkHandler.OnApprovingConnection");
+                    patchedCount++;
                 }
                 else
                 {
@@ -200,7 +195,11 @@ namespace MorePlayers
                 }
 
                 LoggerInstance.Msg("========================================");
-                LoggerInstance.Msg("[ApplyPatches] All patches applied successfully!");
+                LoggerInstance.Msg($"[ApplyPatches] Successfully applied {patchedCount}/3 patches!");
+                if (patchedCount < 3)
+                {
+                    LoggerInstance.Warning("[ApplyPatches] Some patches were not applied. Mod may not work correctly.");
+                }
                 LoggerInstance.Msg("========================================");
             }
             catch (System.Exception ex)
@@ -208,6 +207,7 @@ namespace MorePlayers
                 LoggerInstance.Error("========================================");
                 LoggerInstance.Error($"[ApplyPatches] CRITICAL ERROR: Failed to apply patches!");
                 LoggerInstance.Error($"[ApplyPatches] Exception: {ex}");
+                LoggerInstance.Error($"[ApplyPatches] Stack trace: {ex.StackTrace}");
                 LoggerInstance.Error("========================================");
             }
         }
