@@ -1,59 +1,49 @@
-# Dump Directory
+# Game DLLs Dump
 
-Эта папка содержит дамп игры Pit of Goblin, созданный с помощью Il2CppDumper.
+This folder should contain the game's DLL files needed for compilation. These files are **not included in the repository** because they are:
+- Large in size (>100 MB total)
+- Copyrighted by the game developers
+- Specific to each game installation
 
-## Содержимое
+## How to Get These Files
 
-- `DummyDll/` - Dummy DLL файлы для компиляции мода
-- `dump.cs` - Полный дамп классов игры (не коммитится, слишком большой)
-- `script.json` - Метаданные дампа (не коммитится)
+### Option 1: Use Il2CppDumper (Recommended)
 
-## Какие DLL включены в репозиторий
+1. Download [Il2CppDumper](https://github.com/Perfare/Il2CppDumper/releases)
+2. Run Il2CppDumper with your game files:
+   - `GameAssembly.dll` from game folder
+   - `global-metadata.dat` from `Pit of Goblin_Data\il2cpp_data\Metadata\`
+3. Copy the generated `DummyDll` folder to this location
 
-Для сборки на CI/CD включены только необходимые DLL:
+### Option 2: Copy from BepInEx
 
-- ✅ `Assembly-CSharp.dll` - Основной код игры
-- ✅ `UnityEngine.dll` - Unity Engine
-- ✅ `UnityEngine.CoreModule.dll` - Unity Core
-- ✅ `Unity.Netcode.Runtime.dll` - Сетевой код
-- ✅ `Unity.Services.Lobbies.dll` - Лобби система
+If you have BepInEx installed, you can copy DLLs from:
+```
+<Game Folder>\BepInEx\unhollowed\
+```
 
-Остальные DLL игнорируются через `.gitignore`.
+### Required Files for Compilation
 
-## MelonLoader DLL
+At minimum, you need:
+- `Assembly-CSharp.dll` - Main game code
+- `Unity.Netcode.Runtime.dll` - Networking
 
-MelonLoader.dll и 0Harmony.dll НЕ включены в репозиторий.
+## Structure
 
-Они скачиваются автоматически:
-- **Локально**: Берутся из установленной игры (`<Игра>\MelonLoader\net6\`)
-- **CI/CD**: Скачиваются в workflow на шаге "Download MelonLoader"
+After dumping, your folder should look like:
+```
+dump/
+├── DummyDll/
+│   ├── Assembly-CSharp.dll
+│   ├── Unity.Netcode.Runtime.dll
+│   └── ... (other DLLs)
+└── README.md (this file)
+```
 
-## Как обновить дамп
+## Note for Developers
 
-Если игра обновилась:
+These DLL files are only needed for **compiling** the mod. They are not distributed with the mod and are not required by end users.
 
-1. Запусти Il2CppDumper на новой версии игры
-2. Скопируй результаты в эту папку
-3. Закоммить только нужные DLL:
-   ```bash
-   git add -f dump/DummyDll/Assembly-CSharp.dll
-   git add -f dump/DummyDll/UnityEngine.dll
-   git add -f dump/DummyDll/UnityEngine.CoreModule.dll
-   git add -f dump/DummyDll/Unity.Netcode.Runtime.dll
-   git add -f dump/DummyDll/Unity.Services.Lobbies.dll
-   ```
+## CI/CD
 
-## Размер файлов
-
-Включенные DLL занимают примерно:
-- Assembly-CSharp.dll: ~10-20 MB
-- UnityEngine.dll: ~1-2 MB
-- UnityEngine.CoreModule.dll: ~1-2 MB
-- Unity.Netcode.Runtime.dll: ~500 KB
-- Unity.Services.Lobbies.dll: ~200 KB
-
-Общий размер: ~15-25 MB (приемлемо для Git)
-
-## Примечание
-
-Файл `dump.cs` очень большой (>50 MB) и не нужен для сборки, поэтому он исключен из репозитория.
+GitHub Actions workflow will fail without these files. The project uses NuGet for Unity DLLs, so only game-specific DLLs need to be provided manually.
