@@ -15,10 +15,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
     
@@ -34,7 +34,7 @@ jobs:
         ls -la bin/Release/net6.0/
     
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: MorePlayers-${{ github.sha }}
         path: bin/Release/net6.0/MorePlayers.dll
