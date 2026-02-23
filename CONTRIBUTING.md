@@ -1,217 +1,112 @@
-# Руководство по внесению вклада в MorePlayers
+# Contributing to MorePlayers
 
-Спасибо за интерес к улучшению мода MorePlayers! Мы приветствуем вклад от сообщества.
+Thank you for your interest in contributing! Here are some guidelines to help you get started.
 
-## Как внести вклад
+## Development Setup
 
-### Сообщение об ошибках
+1. **Prerequisites**
+   - .NET SDK 6.0 or later
+   - Git
+   - A text editor or IDE (Visual Studio, VS Code, Rider)
 
-Если вы нашли ошибку:
-
-1. Проверьте, не была ли эта ошибка уже сообщена в [Issues](https://github.com/Rxflex/MorePlayers/issues)
-2. Если нет, создайте новый Issue, используя шаблон Bug Report
-3. Предоставьте максимально подробную информацию:
-   - Шаги для воспроизведения
-   - Ожидаемое и фактическое поведение
-   - Версии игры, мода и MelonLoader
-   - Логи из `MelonLoader\Latest.log`
-
-### Предложение новых функций
-
-Если у вас есть идея для новой функции:
-
-1. Проверьте, не была ли эта функция уже предложена
-2. Создайте новый Issue, используя шаблон Feature Request
-3. Четко опишите:
-   - Какую проблему решает функция
-   - Как она должна работать
-   - Почему это будет полезно
-
-### Внесение изменений в код
-
-#### Подготовка окружения
-
-1. Форкните репозиторий
-2. Клонируйте свой форк:
+2. **Clone the repository**
    ```bash
-   git clone https://github.com/ваш-username/MorePlayers.git
+   git clone https://github.com/YOUR_USERNAME/MorePlayers.git
    cd MorePlayers
    ```
-3. Установите .NET 6.0 SDK
-4. Убедитесь, что проект собирается:
+
+3. **Restore dependencies**
    ```bash
-   dotnet build
+   dotnet restore
    ```
 
-#### Процесс разработки
-
-1. Создайте новую ветку для ваших изменений:
+4. **Build the project**
    ```bash
-   git checkout -b feature/amazing-feature
-   ```
-   или
-   ```bash
-   git checkout -b fix/bug-description
+   dotnet build -c Release
    ```
 
-2. Внесите изменения в код
-
-3. Следуйте стилю кодирования проекта:
-   - Используйте 4 пробела для отступов
-   - Добавляйте комментарии для сложной логики
-   - Используйте осмысленные имена переменных
-   - Следуйте C# naming conventions
-
-4. Тестируйте изменения:
-   - Соберите проект: `dotnet build`
-   - Установите мод в игру
-   - Протестируйте функциональность
-   - Проверьте, что не сломали существующие функции
-
-5. Закоммитьте изменения:
-   ```bash
-   git add .
-   git commit -m "Описание изменений"
-   ```
-   
-   Формат сообщения коммита:
-   - `feat: добавлена новая функция`
-   - `fix: исправлена ошибка`
-   - `docs: обновлена документация`
-   - `refactor: рефакторинг кода`
-   - `test: добавлены тесты`
-
-6. Запушьте изменения:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-7. Создайте Pull Request:
-   - Перейдите на GitHub
-   - Нажмите "New Pull Request"
-   - Выберите вашу ветку
-   - Заполните описание PR
-   - Дождитесь ревью
-
-#### Требования к Pull Request
-
-- Код должен компилироваться без ошибок
-- Изменения должны быть протестированы
-- Добавьте описание изменений
-- Обновите документацию, если необходимо
-- Следуйте стилю кодирования проекта
-
-### Стиль кодирования
-
-```csharp
-// Хорошо
-public class MyClass
-{
-    private const int DEFAULT_VALUE = 10;
-    private int _privateField;
-    
-    public int PublicProperty { get; set; }
-    
-    public void MyMethod(int parameter)
-    {
-        if (parameter > 0)
-        {
-            // Делаем что-то
-            DoSomething();
-        }
-    }
-    
-    private void DoSomething()
-    {
-        // Реализация
-    }
-}
-
-// Плохо
-public class myclass {
-private int privatefield;
-public void mymethod(int p){
-if(p>0){DoSomething();}}}
-```
-
-### Документация
-
-При добавлении новых функций:
-
-1. Обновите README.md
-2. Добавьте примеры в EXAMPLES.md
-3. Обновите CHANGELOG.md
-4. Добавьте XML-комментарии к публичным методам:
-   ```csharp
-   /// <summary>
-   /// Описание метода
-   /// </summary>
-   /// <param name="parameter">Описание параметра</param>
-   /// <returns>Описание возвращаемого значения</returns>
-   public int MyMethod(int parameter)
-   {
-       // ...
-   }
-   ```
-
-### Процесс ревью
-
-1. Maintainer проверит ваш PR
-2. Могут быть запрошены изменения
-3. Внесите запрошенные изменения
-4. После одобрения PR будет смержен
-
-## Структура проекта
+## Project Structure
 
 ```
 MorePlayers/
-├── .github/              # GitHub конфигурация
-│   ├── workflows/        # GitHub Actions
-│   └── ISSUE_TEMPLATE/   # Шаблоны Issues
-├── dump/                 # Дамп игры (не в репозитории)
-│   └── DummyDll/        # DLL файлы игры
-├── MorePlayersMod.cs     # Основной код мода
-├── MorePlayers.csproj    # Файл проекта
-├── README.md             # Основная документация
-├── BUILD.md              # Инструкции по сборке
-├── EXAMPLES.md           # Примеры использования
-├── CHANGELOG.md          # История изменений
-├── CONTRIBUTING.md       # Это руководство
-├── LICENSE               # Лицензия MIT
-└── build.bat             # Скрипт сборки
+├── MorePlayersPlugin.cs           # Main plugin entry point
+├── PluginInfo.cs                  # Plugin metadata
+├── Patches/
+│   └── NetworkHandlerPatches.cs   # Harmony patches
+├── dump/                          # Game DLLs (not in repo)
+│   └── DummyDll/
+│       └── Assembly-CSharp.dll
+└── MorePlayers.csproj             # Project configuration
 ```
 
-## Код поведения
+## Making Changes
 
-### Наши стандарты
+1. **Create a branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-Примеры поведения, которое способствует созданию позитивной среды:
+2. **Make your changes**
+   - Follow existing code style
+   - Add comments for complex logic
+   - Test your changes in-game
 
-- Использование приветливого и инклюзивного языка
-- Уважение различных точек зрения и опыта
-- Принятие конструктивной критики
-- Фокус на том, что лучше для сообщества
-- Проявление эмпатии к другим участникам
+3. **Test thoroughly**
+   - Build the mod
+   - Copy to `BepInEx/plugins/`
+   - Test in-game with different player counts
+   - Check logs for errors
 
-Примеры неприемлемого поведения:
+4. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "Add: description of your changes"
+   ```
 
-- Использование сексуализированного языка или изображений
-- Троллинг, оскорбительные комментарии, личные атаки
-- Публичные или приватные домогательства
-- Публикация личной информации других без разрешения
-- Другое поведение, которое можно считать неуместным
+5. **Push and create a Pull Request**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
 
-## Вопросы?
+## Code Style
 
-Если у вас есть вопросы о процессе внесения вклада:
+- Use meaningful variable names
+- Add XML documentation comments for public methods
+- Keep methods focused and small
+- Use try-catch blocks for error handling
+- Log important events and errors
 
-- Создайте Issue с вопросом
-- Свяжитесь с maintainer через GitHub
+## Testing Checklist
 
-## Лицензия
+Before submitting a PR, ensure:
+- [ ] Code compiles without errors or warnings
+- [ ] Mod loads in-game without crashes
+- [ ] Config file generates correctly
+- [ ] Config changes are applied
+- [ ] Harmony patches apply successfully
+- [ ] Logs show expected behavior
+- [ ] Tested with 2, 4, 10, and 20+ players
 
-Внося вклад в этот проект, вы соглашаетесь, что ваш вклад будет лицензирован под MIT License.
+## Reporting Bugs
 
----
+Use the GitHub issue tracker with the bug report template. Include:
+- Game version
+- BepInEx version
+- Mod version
+- Steps to reproduce
+- Log files (`BepInEx/LogOutput.log`)
 
-Спасибо за ваш вклад! 🎉
+## Suggesting Features
+
+Use the GitHub issue tracker with the feature request template. Describe:
+- The problem you're trying to solve
+- Your proposed solution
+- Any alternatives you've considered
+
+## Questions?
+
+Feel free to open an issue for questions or join discussions!
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.

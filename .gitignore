@@ -14,6 +14,7 @@
 [Rr]eleases/
 x64/
 x86/
+build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -28,29 +29,64 @@ bld/
 # NuGet Packages
 *.nupkg
 **/packages/*
+!**/packages/build/
 
-# Local build configuration
-Directory.Build.props
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
 
-# Dump files - игнорируем все DLL кроме необходимых для сборки
-dump/DummyDll/*.dll
-dump/script.json
-dump/dump.cs
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
 
-# Но разрешаем необходимые DLL для CI/CD
-!dump/DummyDll/Assembly-CSharp.dll
-!dump/DummyDll/UnityEngine.dll
-!dump/DummyDll/UnityEngine.CoreModule.dll
-!dump/DummyDll/Unity.Netcode.Runtime.dll
-!dump/DummyDll/Unity.Services.Lobbies.dll
-
-# IDE
-.vscode/
+# JetBrains Rider
 .idea/
-*.swp
-*.swo
-*~
+*.sln.iml
 
-# OS
+# Others
+*.Cache
+ClientBin/
+[Ss]tyle[Cc]op.*
+~$*
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+node_modules/
+
+# Backup & report files
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+
+# Microsoft Fakes
+FakesAssemblies/
+
+# Node.js Tools for Visual Studio
+.ntvs_analysis.dat
+
+# Visual Studio 6 build log
+*.plg
+
+# Visual Studio 6 workspace options file
+*.opt
+
+# LightSwitch generated files
+GeneratedArtifacts/
+_Pvt_Extensions/
+ModelManifest.xml
+
+# Mac
 .DS_Store
-Thumbs.db

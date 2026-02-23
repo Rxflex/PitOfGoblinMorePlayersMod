@@ -1,69 +1,82 @@
-# Быстрый старт MorePlayers
+# Quick Start Guide
 
-Это краткое руководство поможет вам быстро установить и начать использовать мод MorePlayers.
+## For Users
 
-## ⚡ За 3 минуты
+### Installation
 
-### 1. Установите MelonLoader (1 минута)
+1. **Install BepInEx**
+   - Download BepInEx 5 IL2CPP from: https://github.com/BepInEx/BepInEx/releases
+   - Extract to your game folder (where `Pit of Goblin.exe` is located)
+   - Run the game once to generate BepInEx folders
 
-1. Скачайте [MelonLoader](https://github.com/LavaGang/MelonLoader/releases/latest)
-2. Запустите установщик
-3. Выберите папку с игрой Pit of Goblin
-4. Нажмите "Install"
+2. **Install MorePlayers Mod**
+   - Download `MorePlayers.dll` from releases
+   - Copy to `BepInEx/plugins/` folder
+   - Run the game
 
-### 2. Установите мод (30 секунд)
+3. **Configure**
+   - After first run, edit `BepInEx/config/com.rxflex.moreplayers.cfg`
+   - Change `MaxPlayers` value (2-100)
+   - Restart the game
 
-1. Скачайте [MorePlayers.dll](https://github.com/Rxflex/MorePlayers/releases/latest)
-2. Скопируйте в `<Папка игры>\Mods\`
+### Configuration Example
 
-### 3. Запустите игру (30 секунд)
+```ini
+[General]
+MaxPlayers = 20
+```
 
-1. Запустите Pit of Goblin
-2. Дождитесь загрузки MelonLoader
-3. Готово! Теперь можно играть до 20 игроков
+Change `20` to any number between 2 and 100.
 
-## 🎮 Первая игра
+## For Developers
 
-1. Выберите "Multiplayer"
-2. Нажмите "Create Lobby"
-3. Пригласите друзей (до 20 человек)
-4. Начните игру!
+### Building from Source
 
-## ⚙️ Настройка (опционально)
+1. **Prerequisites**
+   - .NET SDK 6.0 or later
+   - Git
 
-Хотите изменить лимит игроков (например, на 6)?
-
-1. Закройте игру
-2. Откройте `<Папка игры>\UserData\MelonPreferences.cfg`
-3. Найдите:
-   ```ini
-   [MorePlayers]
-   MaxPlayers = 20
+2. **Clone and Build**
+   ```bash
+   git clone <repository-url>
+   cd MorePlayers
+   dotnet restore
+   dotnet build -c Release
    ```
-4. Измените на нужное значение (например, 6, 8, 12)
-5. Сохраните и запустите игру
 
-## ❓ Проблемы?
+3. **Output**
+   - DLL will be in `bin/Release/netstandard2.1/MorePlayers.dll`
 
-### Мод не загружается
-- Проверьте, что MelonLoader установлен
-- Убедитесь, что DLL в папке `Mods`
+### Project Structure
 
-### Не могу подключиться
-- Все игроки должны иметь мод
-- У всех должно быть одинаковое значение MaxPlayers
+```
+MorePlayers/
+├── MorePlayersPlugin.cs      # Main plugin class
+├── PluginInfo.cs              # Plugin metadata
+├── Patches/
+│   └── NetworkHandlerPatches.cs  # Harmony patches
+├── dump/                      # Game DLLs (not in repo)
+└── MorePlayers.csproj         # Project file
+```
 
-### Игра крашится
-- Уменьшите MaxPlayers в конфиге
-- Проверьте логи в `MelonLoader\Latest.log`
+### Testing
 
-## 📚 Дополнительно
+1. Copy `MorePlayers.dll` to `BepInEx/plugins/`
+2. Run the game
+3. Check `BepInEx/LogOutput.log` for mod messages
+4. Try creating a lobby with more than 4 players
 
-- [Полная документация](README.md)
-- [Примеры использования](EXAMPLES.md)
-- [Инструкции по сборке](BUILD.md)
-- [Сообщить об ошибке](https://github.com/Rxflex/MorePlayers/issues)
+### Troubleshooting
 
----
+**Mod doesn't load:**
+- Check BepInEx is installed correctly
+- Look for errors in `BepInEx/LogOutput.log`
 
-**Важно:** Все игроки в лобби должны иметь установленный мод!
+**Game crashes:**
+- Check if game was updated (may need new dump)
+- Verify BepInEx version is compatible
+
+**Max players not working:**
+- Check config file was generated
+- Verify patches applied (check logs)
+- Make sure all players have the mod installed

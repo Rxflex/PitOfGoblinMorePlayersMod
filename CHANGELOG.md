@@ -1,46 +1,26 @@
 # Changelog
 
-Все значимые изменения в проекте будут документированы в этом файле.
-
-Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
-и этот проект придерживается [Semantic Versioning](https://semver.org/lang/ru/).
+All notable changes to this project will be documented in this file.
 
 ## [1.0.0] - 2024-02-23
 
-### Добавлено
-- Первый релиз мода MorePlayers
-- Увеличение максимального количества игроков с 4 до 20 по умолчанию
-- Конфигурационный файл для настройки максимального количества игроков
-- Валидация значений (от 2 до 100 игроков)
-- Подробное логирование всех операций
-- Патчинг методов NetworkHandler:
-  - `Awake()` - изменение m_maxClientCount
-  - `CreateLobbyAsync()` - изменение параметра maxPlayers
-  - `OnApprovingConnection()` - логирование подключений
-- Автоматическая сборка через build.bat
-- Документация:
-  - README.md с подробным описанием
-  - BUILD.md с инструкциями по сборке
-  - CHANGELOG.md для отслеживания изменений
-  - LICENSE (MIT)
+### Added
+- Initial release
+- Configurable max player count (2-100 players)
+- Default max players set to 20
+- BepInEx plugin implementation
+- Harmony patches for NetworkHandler
+- Configuration file support
 
-### Технические детали
-- Использование MelonLoader 0.6.1
-- Использование Harmony для патчинга
-- Поддержка .NET 6.0
-- Совместимость с Unity Netcode
-- Дефолтное значение: 20 игроков (настраивается от 2 до 100)
+### Features
+- Patches `NetworkHandler.Awake` to set max client count
+- Patches `NetworkHandler.CreateLobbyAsync` to override lobby max players
+- Patches `NetworkHandler.OnApprovingConnection` for connection logging
+- Automatic config generation on first run
+- Config validation (2-100 range)
 
-## [Unreleased]
-
-### Планируется
-- Поддержка динамического изменения количества игроков без перезапуска
-- UI для настройки мода в игре
-- Автоматическая синхронизация настроек между игроками
-- Оптимизация для большого количества игроков (>12)
-- Поддержка других методов подключения (Steam, Epic Games)
-
----
-
-[1.0.0]: https://github.com/Rxflex/MorePlayers/releases/tag/v1.0.0
-[Unreleased]: https://github.com/Rxflex/MorePlayers/compare/v1.0.0...HEAD
+### Technical Details
+- Built with BepInEx 5
+- Uses Harmony for runtime patching
+- Targets .NET Standard 2.1
+- Compatible with Il2Cpp games

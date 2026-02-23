@@ -1,22 +1,19 @@
 ---
-name: Feature Request
-about: Предложить новую функцию для мода
+name: Feature request
+about: Suggest an idea for this project
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
 ---
 
-## Описание функции
-Четкое и краткое описание того, что вы хотите добавить.
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-## Проблема, которую это решит
-Опишите проблему, которую решит эта функция. Например: "Я всегда расстраиваюсь, когда [...]"
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
-## Предлагаемое решение
-Четкое и краткое описание того, что вы хотите видеть.
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-## Альтернативы
-Описание альтернативных решений или функций, которые вы рассматривали.
-
-## Дополнительный контекст
-Добавьте любой другой контекст или скриншоты о запросе функции здесь.
+**Additional context**
+Add any other context or screenshots about the feature request here.

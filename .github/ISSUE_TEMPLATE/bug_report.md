@@ -1,39 +1,34 @@
 ---
-name: Bug Report
-about: Сообщить об ошибке в моде
+name: Bug report
+about: Create a report to help us improve
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
-## Описание ошибки
-Четкое и краткое описание проблемы.
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-## Шаги для воспроизведения
-1. Перейти к '...'
-2. Нажать на '...'
-3. Прокрутить до '...'
-4. Увидеть ошибку
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. See error
 
-## Ожидаемое поведение
-Описание того, что должно было произойти.
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
-## Скриншоты
-Если применимо, добавьте скриншоты для объяснения проблемы.
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
-## Информация о системе
-- ОС: [например, Windows 10]
-- Версия игры: [например, 1.0.5]
-- Версия мода: [например, 1.0.0]
-- Версия MelonLoader: [например, 0.6.1]
-- Другие установленные моды: [перечислите]
+**Environment:**
+ - Game Version: [e.g. 1.0.5]
+ - BepInEx Version: [e.g. 5.4.21]
+ - Mod Version: [e.g. 1.0.0]
+ - OS: [e.g. Windows 10]
 
-## Логи
-Пожалуйста, приложите содержимое файла `MelonLoader\Latest.log`
+**Log Files**
+Please attach your `BepInEx/LogOutput.log` file.
 
-```
-Вставьте логи здесь
-```
-
-## Дополнительный контекст
-Любая другая информация о проблеме.
+**Additional context**
+Add any other context about the problem here.
