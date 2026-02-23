@@ -2,6 +2,7 @@ using MelonLoader;
 using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
+using System.Linq;
 
 [assembly: MelonInfo(typeof(MorePlayers.MorePlayersMod), "MorePlayers", "1.0.0", "Rxflex", "https://github.com/Rxflex")]
 [assembly: MelonGame("Friendly Foe", "Pit of Goblin")]
@@ -130,9 +131,22 @@ namespace MorePlayers
                 var harmony = HarmonyInstance;
                 LoggerInstance.Msg($"[ApplyPatches] Harmony instance ID: {harmony.Id}");
                 
-                // Получаем тип NetworkHandler
+                // Получаем тип NetworkHandler через Assembly-CSharp
                 LoggerInstance.Msg("[ApplyPatches] Looking for Game.Networking.NetworkHandler type...");
-                var networkHandlerType = AccessTools.TypeByName("Game.Networking.NetworkHandler");
+                
+                // Для Il2Cpp нужно искать тип в конкретной сборке
+                var assemblyCSharp = System.AppDomain.CurrentDomain.GetAssemblies()
+                    .FirstOrDefault(a => a.GetName().Name == "Assembly-CSharp");
+                
+                if (assemblyCSharp == null)
+                {
+                    LoggerInstance.Error("[ApplyPatches] Assembly-CSharp not found!");
+                    return;
+                }
+                
+                LoggerInstance.Msg($"[ApplyPatches] Found Assembly-CSharp: {assemblyCSharp.FullName}");
+                
+                var networkHandlerType = assemblyCSharp.GetType("Game.Networking.NetworkHandler");
                 if (networkHandlerType == null)
                 {
                     LoggerInstance.Error("[ApplyPatches] Failed to find NetworkHandler type!");
